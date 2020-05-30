@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "projects": {
+    "sandbox": {
+      "root": "apps/sandbox",
+      "sourceRoot": "apps/sandbox/src",
+      "projectType": "application",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/web:build",
+          "options": {
+            "webpackConfig": "apps/sandbox/webpack.config.js",
+            "outputPath": "dist/apps/sandbox",
+            "index": "apps/sandbox/src/index.html",
+            "main": "apps/sandbox/src/main.ts",
+            "tsConfig": "apps/sandbox/tsconfig.app.json",
+            "assets": [
+              "apps/sandbox/src/favicon.ico",
+              "apps/sandbox/src/assets"
+            ],
+            "styles": ["apps/sandbox/src/styles.scss"],
+            "scripts": [],
+            "vendorChunk": false
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/sandbox/src/environments/environment.ts",
+                  "with": "apps/sandbox/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "sandbox:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "sandbox:build:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "apps/sandbox/.eslintrc",
+            "tsConfig": [
+              "apps/sandbox/tsconfig.app.json",
+              "apps/sandbox/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!apps/sandbox/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/sandbox/jest.config.js",
+            "tsConfig": "apps/sandbox/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/sandbox/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "shared-library-webpack-plugin": {
+      "root": "libs/shared-library-webpack-plugin",
+      "sourceRoot": "libs/shared-library-webpack-plugin/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/shared-library-webpack-plugin/.eslintrc",
+            "tsConfig": [
+              "libs/shared-library-webpack-plugin/tsconfig.lib.json",
+              "libs/shared-library-webpack-plugin/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/shared-library-webpack-plugin/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@ng-builders/build:stepper",
+          "options": {
+            "targets": {
+              "jest": {
+                "target": "shared-library-webpack-plugin:jest",
+                "deps": ["server"]
+              },
+              "server": {
+                "target": "sandbox:serve",
+                "watch": true
+              },
+              "build": {
+                "target": "shared-library-webpack-plugin:build"
+              }
+            },
+            "steps": ["build", "jest"]
+          }
+        },
+        "jest": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/shared-library-webpack-plugin/jest.config.js",
+            "tsConfig": "libs/shared-library-webpack-plugin/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/shared-library-webpack-plugin",
+            "tsConfig": "libs/shared-library-webpack-plugin/tsconfig.lib.json",
+            "packageJson": "libs/shared-library-webpack-plugin/package.json",
+            "main": "libs/shared-library-webpack-plugin/src/index.ts",
+            "assets": [
+              "libs/shared-library-webpack-plugin/*.md",
+              "README.md",
+              "LICENSE"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/node"
+  },
+  "schematics": {
+    "@nrwl/workspace": {
+      "library": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/cypress": {
+      "cypress-project": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/react": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      },
+      "storybook-configuration": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/next": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/web": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/node": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/nx-plugin": {
+      "plugin": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/nest": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/express": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "shared-library-webpack-plugin"
+}
