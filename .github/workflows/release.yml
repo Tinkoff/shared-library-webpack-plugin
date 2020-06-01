@@ -23,6 +23,7 @@ jobs:
           CI: true
       - name: Release
         run: |
+          npm run build
           npm run release
         env:
           CI: true
