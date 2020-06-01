@@ -12,5 +12,13 @@
   "description": "Webpack plugin for library sharing at runtime between applications",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin#readme"
 }
