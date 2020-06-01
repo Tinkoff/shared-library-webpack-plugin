@@ -1,0 +1,16 @@
+{
+  "name": "@tinkoff/shared-library-webpack-plugin",
+  "version": "0.0.0-development.0",
+  "license": "Apache-2.0",
+  "keywords": [
+    "shared",
+    "library",
+    "webpack",
+    "plugin"
+  ],
+  "author": "Igor Katsuba <i.katsuba@tinkoff.ru>",
+  "description": "Webpack plugin for library sharing at runtime between applications",
+  "publishConfig": {
+    "access": "public"
+  }
+}
