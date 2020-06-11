@@ -5,6 +5,7 @@ import { compilation, Compiler, Logger, Plugin } from 'webpack';
 import { ConcatSource, Source } from 'webpack-sources';
 import * as minimatch from 'minimatch';
 import { parse } from 'path';
+import { v4 as uuidV4 } from 'uuid';
 
 import {
   enforceSourceToString,
@@ -199,7 +200,7 @@ export class SharedLibraryWebpackPlugin implements Plugin {
         !this.disableDefaultJsonpFunctionChange &&
         compiler.options?.output?.jsonpFunction === 'webpackJsonp'
       ) {
-        compiler.options.output.jsonpFunction = Math.random().toString();
+        compiler.options.output.jsonpFunction = uuidV4();
       }
     });
 
