@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin#readme",
   "dependencies": {
-    "uuid": "^8.1.0"
+    "uuid": "^8.1.0",
+    "jscodeshift": "^0.9.0",
+    "lodash": "^4.17.15"
   }
 }
