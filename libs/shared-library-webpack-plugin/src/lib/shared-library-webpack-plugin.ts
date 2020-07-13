@@ -15,10 +15,16 @@ import {
   suffixFromVersion,
 } from './utils';
 
+type ModuleWithDeps = compilation.Module & WithDeps;
+
 /**
  * webpack фиговенько затипизирован, по этому иногда приходиться писать типы, которых нет
  */
 type AddChunk = (name: string) => compilation.Chunk;
+
+interface WithDeps {
+  dependencies: { module: ModuleWithDeps | null }[];
+}
 
 /**
  * Конфиг, по которому происходит формирование и выделение анка под расшаренную
@@ -307,7 +313,10 @@ if(${JSON.stringify(
   ${this.globalObject}['${this.namespace}'] = ${this.globalObject}['${
           this.namespace
         }'] || {};
-  ${this.globalObject}['${this.namespace}']['${ch.name}'] = module;
+  ${this.globalObject}['${this.namespace}']['${ch.name}'] = ${
+          this.globalObject
+        }['${this.namespace}']['${ch.name}'] || {};
+  ${this.globalObject}['${this.namespace}']['${ch.name}'][moduleId] = module;
 }`;
       })
       .join('');
@@ -319,10 +328,12 @@ if(${JSON.stringify(
           [...ch.modulesIterable].map((m) => m.id)
         )}.indexOf(moduleId) > -1 && ${this.globalObject}['${
           this.namespace
-        }'] && ${this.globalObject}['${this.namespace}']['${ch.name}']){
+        }'] && ${this.globalObject}['${this.namespace}']['${ch.name}'] && ${
+          this.globalObject
+        }['${this.namespace}']['${ch.name}'][moduleId]){
   installedModules[moduleId] = ${this.globalObject}['${this.namespace}']['${
           ch.name
-        }'];
+        }'][moduleId];
 }`;
       })
       .join('');
@@ -616,13 +627,27 @@ if(installedChunks[depId] !== 0){
             newChunk.name
           );
 
-          // удаляем модуль из других чанков
-          module.chunksIterable.forEach((ch) => {
-            module.removeChunk(ch);
-          });
+          const addModuleToChunk = (
+            module: ModuleWithDeps,
+            chunk: compilation.Chunk
+          ) => {
+            // удаляем модуль из других чанков
+            module.chunksIterable.forEach((ch) => {
+              module.removeChunk(ch);
+            });
 
-          // добавляем модуль к новому чанку
-          newChunk.addModule(module);
+            // добавляем модуль к новому чанку
+            newChunk.addModule(module);
+
+            // в зависимостях смотрим модули с тем же контекстом
+            // добавляем их в тот же чанк
+            module.dependencies
+              .filter((dep) => dep.module?.context.startsWith(module.context))
+              .forEach((dep) => addModuleToChunk(dep.module, chunk));
+          };
+
+          addModuleToChunk(module, newChunk);
+
           // и привязываем его к одноименной группе
           (groupChunk as any).pushChunk(newChunk);
 

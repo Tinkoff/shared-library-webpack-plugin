@@ -279,7 +279,11 @@ describe('SharedLibraryWebpackPlugin', () => {
       beforeEach(async () => {
         await page.evaluateOnNewDocument(() => {
           window['__sharedLibs__'] = {};
-          window['__sharedLibs__']['lodash-4.17'] = {
+          window['__sharedLibs__']['lodash-4.17'] =
+            window['__sharedLibs__']['lodash-4.17'] || {};
+          window['__sharedLibs__']['lodash-4.17'][
+            '../../../node_modules/lodash/lodash.js'
+          ] = {
             exports: {
               camelCase() {
                 return 'There is sharing!';
