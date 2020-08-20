@@ -213,6 +213,35 @@ describe('SharedLibraryWebpackPlugin', () => {
     });
   });
 
+  describe('Angular and secondary entry points', () => {
+    let stats: Stats;
+
+    beforeAll(() => {
+      return runWebpack({
+        entry: { entry: resolve(__dirname, '../../__tests__/3.js') },
+        plugins: [
+          new SharedLibraryWebpackPlugin({
+            libs: '@angular/**',
+          }),
+        ],
+      }).then((compilationStats) => {
+        stats = compilationStats;
+      });
+    });
+
+    it('@angular/common и @angular/common/http каждый в своем чанке', () => {
+      const { assetsByChunkName } = stats.toJson();
+
+      expect(assetsByChunkName).toEqual({
+        entry: 'entry.js',
+        'angularCommon-10.0': 'angularCommon-10.0.js',
+        'angularCommonHttp-10.0': 'angularCommonHttp-10.0.js',
+        'angularCore-10.0': 'angularCore-10.0.js',
+        runtime: 'runtime.js',
+      });
+    });
+  });
+
   describe('Проверка загрузки и исполнения скриптов', () => {
     let browser: Browser;
     let page: Page;

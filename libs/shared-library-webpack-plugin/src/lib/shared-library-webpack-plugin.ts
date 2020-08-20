@@ -15,7 +15,11 @@ import {
   suffixFromVersion,
 } from './utils';
 
-type ModuleWithDeps = compilation.Module & WithDeps;
+type ModuleWithDeps = compilation.Module &
+  WithDeps & {
+    userRequest: string;
+    rawRequest?: string;
+  };
 
 /**
  * webpack фиговенько затипизирован, по этому иногда приходиться писать типы, которых нет
@@ -642,7 +646,11 @@ if(installedChunks[depId] !== 0){
             // в зависимостях смотрим модули с тем же контекстом
             // добавляем их в тот же чанк
             module.dependencies
-              .filter((dep) => dep.module?.context.startsWith(module.context))
+              .filter(
+                (dep) =>
+                  dep.module?.context.startsWith(module.context) &&
+                  !this.getLibrarySearchConfig(dep.module)
+              )
               .forEach((dep) => addModuleToChunk(dep.module, chunk));
           };
 
