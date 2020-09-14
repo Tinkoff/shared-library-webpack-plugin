@@ -1,3 +1,6 @@
+[![npm](https://img.shields.io/npm/v/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
+[![npm](https://img.shields.io/npm/dm/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
+
 # SharedLibraryWebpackPlugin
 
 SharedLibraryWebpackPlugin предназначен для шаринга библиотек между приложениями в рантайме.
