@@ -78,6 +78,7 @@ export interface SharedLibrarySearchConfig {
    * // chunkName => angularAnimationsBrowser-8.2-ngrxStore-7.4
    */
   deps?: string[];
+  usedExports?: string[];
 }
 
 /**
@@ -670,7 +671,16 @@ if(installedChunks[depId] !== 0){
           newChunk.modulesIterable.forEach((m) => {
             if (m.type.startsWith('javascript/')) {
               m.used = true;
-              m.usedExports = true;
+
+              if (
+                Array.isArray(m.usedExports) &&
+                Array.isArray(librarySearchConfig.usedExports)
+              ) {
+                m.usedExports.push(...librarySearchConfig.usedExports);
+              } else {
+                m.usedExports = true;
+              }
+
               m.buildMeta.providedExports = true;
             }
           });
