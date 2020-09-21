@@ -241,7 +241,7 @@ describe('SharedLibraryWebpackPlugin', () => {
       }).then((compilationStats) => {
         stats = compilationStats;
       });
-    });
+    }, 10_000);
 
     it('@angular/common и @angular/common/http каждый в своем чанке', () => {
       const { assetsByChunkName } = stats.toJson();

@@ -126,8 +126,7 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/shared-library-webpack-plugin/jest.config.js",
-            "tsConfig": "libs/shared-library-webpack-plugin/tsconfig.spec.json",
-            "passWithNoTests": true
+            "tsConfig": "libs/shared-library-webpack-plugin/tsconfig.spec.json"
           }
         },
         "build": {
