@@ -87,7 +87,7 @@ export interface SharedLibrarySearchConfig {
 export interface SharedLibraryWebpackPluginOptions {
   /**
    * Неймспейс в глобальном простарнстве для хранения экспортов либ для шаринга
-   * Default: '__sharedLibs__'
+   * Default: '__shared_libs__'
    */
   namespace?: string;
   /**
@@ -130,7 +130,7 @@ export class SharedLibraryWebpackPlugin implements Plugin {
     deps: [],
   };
 
-  public static readonly defaultSharedLibraryNamespace = '__sharedLibs__';
+  public static readonly defaultSharedLibraryNamespace = '__shared_libs__';
 
   private static readonly moduleSeparator = '___module_separator___';
 
@@ -213,6 +213,11 @@ export class SharedLibraryWebpackPlugin implements Plugin {
       ) {
         compiler.options.output.jsonpFunction = uuidV4();
       }
+
+      // принудительно устанавливаем хэширование id модулей
+      // иначе могут быть конфликты при их резолве,
+      // например, при сборках для prod и dev
+      compiler.options.optimization.moduleIds = 'hashed';
     });
 
     // Получаем инстанс текущей компиляции, сохраняем его для удобства в инстанс
