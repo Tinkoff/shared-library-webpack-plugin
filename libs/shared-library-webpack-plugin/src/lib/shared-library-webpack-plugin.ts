@@ -213,6 +213,11 @@ export class SharedLibraryWebpackPlugin implements Plugin {
       ) {
         compiler.options.output.jsonpFunction = uuidV4();
       }
+
+      // принудительно устанавливаем хэширование id модулей
+      // иначе могут быть конфликты при их резолве,
+      // например, при сборках для prod и dev
+      compiler.options.optimization.moduleIds = 'hashed';
     });
 
     // Получаем инстанс текущей компиляции, сохраняем его для удобства в инстанс
