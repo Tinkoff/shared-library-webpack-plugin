@@ -332,9 +332,7 @@ describe('SharedLibraryWebpackPlugin', () => {
           window['__sharedLibs__'] = {};
           window['__sharedLibs__']['lodash-4.17'] =
             window['__sharedLibs__']['lodash-4.17'] || {};
-          window['__sharedLibs__']['lodash-4.17'][
-            '../../../node_modules/lodash/lodash.js'
-          ] = {
+          window['__sharedLibs__']['lodash-4.17']['svWY'] = {
             exports: {
               camelCase() {
                 return 'There is sharing!';
