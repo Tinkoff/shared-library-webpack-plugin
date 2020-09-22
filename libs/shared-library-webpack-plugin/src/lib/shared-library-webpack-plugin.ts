@@ -87,7 +87,7 @@ export interface SharedLibrarySearchConfig {
 export interface SharedLibraryWebpackPluginOptions {
   /**
    * Неймспейс в глобальном простарнстве для хранения экспортов либ для шаринга
-   * Default: '__sharedLibs__'
+   * Default: '__shared_libs__'
    */
   namespace?: string;
   /**
@@ -130,7 +130,7 @@ export class SharedLibraryWebpackPlugin implements Plugin {
     deps: [],
   };
 
-  public static readonly defaultSharedLibraryNamespace = '__sharedLibs__';
+  public static readonly defaultSharedLibraryNamespace = '__shared_libs__';
 
   private static readonly moduleSeparator = '___module_separator___';
 

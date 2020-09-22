@@ -320,7 +320,7 @@ describe('SharedLibraryWebpackPlugin', () => {
       await page.goto('http://localhost:4200');
 
       const minimatchIsExists = await page.evaluate(
-        () => !!window['__sharedLibs__']['minimatch-3.0']
+        () => !!window['__shared_libs__']['minimatch-3.0']
       );
 
       expect(minimatchIsExists).toBeTruthy();
@@ -329,10 +329,10 @@ describe('SharedLibraryWebpackPlugin', () => {
     describe('Эмуляция уже загруженного lodash 4.17', () => {
       beforeEach(async () => {
         await page.evaluateOnNewDocument(() => {
-          window['__sharedLibs__'] = {};
-          window['__sharedLibs__']['lodash-4.17'] =
-            window['__sharedLibs__']['lodash-4.17'] || {};
-          window['__sharedLibs__']['lodash-4.17']['svWY'] = {
+          window['__shared_libs__'] = {};
+          window['__shared_libs__']['lodash-4.17'] =
+            window['__shared_libs__']['lodash-4.17'] || {};
+          window['__shared_libs__']['lodash-4.17']['svWY'] = {
             exports: {
               camelCase() {
                 return 'There is sharing!';
@@ -380,8 +380,8 @@ describe('SharedLibraryWebpackPlugin', () => {
     describe('Эмуляция уже загруженного lodash 4.16', () => {
       beforeEach(async () => {
         await page.evaluateOnNewDocument(() => {
-          window['__sharedLibs__'] = {};
-          window['__sharedLibs__']['lodash-4.16'] = {
+          window['__shared_libs__'] = {};
+          window['__shared_libs__']['lodash-4.16'] = {
             exports: {
               camelCase() {
                 return 'There is sharing!';
