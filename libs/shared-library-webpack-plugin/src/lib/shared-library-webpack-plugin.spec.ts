@@ -14,12 +14,13 @@ const commonWebpackConfig: webpack.Configuration = {
   output: {
     path: resolve(__dirname, '../../__tests__/output'),
   },
-  mode: 'development',
+  mode: 'production',
   optimization: {
     runtimeChunk: {
       name: 'runtime',
     },
   },
+  performance: false,
 };
 
 function webpackCallbackFactory(
@@ -60,18 +61,19 @@ function runWebpack(config: webpack.Configuration): Promise<Stats> {
   });
 }
 
-function getChunkSource(chunkName: string) {
+function getChunkSource(assetName: string) {
   return fs
-    .readFileSync(resolve(__dirname, `../../__tests__/output/${chunkName}.js`))
+    .readFileSync(resolve(__dirname, `../../__tests__/output/${assetName}`))
     .toString();
 }
 
-function getChunkAST(chunkName: string): Collection<any> {
-  return jscodeshift(getChunkSource(chunkName));
+function getChunkAST(assetName: string): Collection<any> {
+  return jscodeshift(getChunkSource(assetName));
 }
 
 function windowWithNamespaceIsExist(namespace: string): boolean | never {
-  return getChunkAST('runtime')
+  const ast = getChunkAST('runtime.js');
+  return ast
     .find(jscodeshift.MemberExpression)
     .filter((path) => {
       const expression = path.value;
@@ -79,8 +81,8 @@ function windowWithNamespaceIsExist(namespace: string): boolean | never {
       return (
         expression.object.type === 'Identifier' &&
         expression.object.name === 'window' &&
-        expression.property.type === 'Literal' &&
-        expression.property.value === namespace
+        expression.property.type === 'Identifier' &&
+        expression.property.name === namespace
       );
     })
     .get(0);
@@ -128,6 +130,7 @@ describe('SharedLibraryWebpackPlugin', () => {
         plugins: [
           new SharedLibraryWebpackPlugin({
             libs: 'lodash',
+            disableDefaultJsonpFunctionChange: true,
           }),
         ],
       }).then((compilationStats) => {
@@ -148,13 +151,7 @@ describe('SharedLibraryWebpackPlugin', () => {
     it('entry не должен содержать динамический чанк', () => {
       const { entrypoints } = stats.toJson();
 
-      expect(entrypoints.entry.chunks).toEqual(['runtime', 'entry']);
-    });
-
-    it('Имя jsonpFunction изменено на случайное', () => {
-      expect(stats.compilation.outputOptions.jsonpFunction).not.toEqual(
-        DEFAULT_WEBPACK_JSONP_FN_NAME
-      );
+      expect(entrypoints.entry.assets).toEqual(['runtime.js', 'entry.js']);
     });
 
     it('Глобальный неймспейс для шаринга имеет дефолтное имя', () => {
@@ -163,6 +160,20 @@ describe('SharedLibraryWebpackPlugin', () => {
           SharedLibraryWebpackPlugin.defaultSharedLibraryNamespace
         )
       ).toBeTruthy();
+    });
+
+    it('Имя jsonpFunction не изменено', () => {
+      expect(stats.compilation.outputOptions.jsonpFunction).toEqual(
+        DEFAULT_WEBPACK_JSONP_FN_NAME
+      );
+    });
+
+    it('Check outputs', () => {
+      const { assets } = stats.toJson();
+
+      assets.forEach(({ name }) => {
+        expect(getChunkSource(name)).toMatchSnapshot();
+      });
     });
   });
 
@@ -176,13 +187,18 @@ describe('SharedLibraryWebpackPlugin', () => {
         plugins: [
           new SharedLibraryWebpackPlugin({
             libs: ['lodash/**', { name: 'minimatch', deps: ['lodash'] }],
-            disableDefaultJsonpFunctionChange: true,
             namespace: anotherNamespace,
           }),
         ],
       }).then((compilationStats) => {
         stats = compilationStats;
       });
+    });
+
+    it('Имя jsonpFunction изменено на случайное', () => {
+      expect(stats.compilation.outputOptions.jsonpFunction).not.toEqual(
+        DEFAULT_WEBPACK_JSONP_FN_NAME
+      );
     });
 
     it('На выходе получаем 4 чанка. Имена формируются с учетом зависимостей', () => {
@@ -199,13 +215,7 @@ describe('SharedLibraryWebpackPlugin', () => {
     it('entry не должен содержать динамические чанки', () => {
       const { entrypoints } = stats.toJson();
 
-      expect(entrypoints.entry.chunks).toEqual(['runtime', 'entry']);
-    });
-
-    it('Имя jsonpFunction не изменено', () => {
-      expect(stats.compilation.outputOptions.jsonpFunction).toEqual(
-        DEFAULT_WEBPACK_JSONP_FN_NAME
-      );
+      expect(entrypoints.entry.assets).toEqual(['runtime.js', 'entry.js']);
     });
 
     it('Глобальный неймспейс для шаринга имеет кастомное имя', () => {
@@ -221,13 +231,17 @@ describe('SharedLibraryWebpackPlugin', () => {
         entry: { entry: resolve(__dirname, '../../__tests__/3.js') },
         plugins: [
           new SharedLibraryWebpackPlugin({
-            libs: '@angular/**',
+            libs: [
+              { name: '@angular/common', usedExports: ['APP_BASE_HREF'] },
+              '@angular/**',
+            ],
+            disableDefaultJsonpFunctionChange: true,
           }),
         ],
       }).then((compilationStats) => {
         stats = compilationStats;
       });
-    });
+    }, 10_000);
 
     it('@angular/common и @angular/common/http каждый в своем чанке', () => {
       const { assetsByChunkName } = stats.toJson();
@@ -238,6 +252,14 @@ describe('SharedLibraryWebpackPlugin', () => {
         'angularCommonHttp-10.0': 'angularCommonHttp-10.0.js',
         'angularCore-10.0': 'angularCore-10.0.js',
         runtime: 'runtime.js',
+      });
+    });
+
+    it('Check outputs', () => {
+      const { assets } = stats.toJson();
+
+      assets.forEach(({ name }) => {
+        expect(getChunkSource(name)).toMatchSnapshot();
       });
     });
   });
