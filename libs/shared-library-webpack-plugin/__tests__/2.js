@@ -1,4 +1,4 @@
-import last from 'lodash/last';
+import last from 'lodash/lastIndexOf';
 import * as minimatch from 'minimatch';
 
 console.log(last);
