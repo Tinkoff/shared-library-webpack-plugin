@@ -4,6 +4,7 @@ import { join, resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { FunctionDeclaration } from 'jscodeshift';
 import * as semver from 'semver';
+import { createHash } from 'crypto';
 
 /**
  * [Конфиг хука]{@see Tap} с приоритетом
@@ -88,4 +89,19 @@ export function suffixFromVersion(version: string): string {
   return (
     `${major}.${minor}` + (prerelease.length ? `-${prerelease.join('.')}` : '')
   );
+}
+
+const usedIds = new Set<string>();
+
+export function createUniqueHash(str: string): string {
+  const hash = createHash('md4');
+  hash.update(str);
+  const hashId = hash.digest('hex');
+  let len = 4;
+  while (usedIds.has(hashId.substr(0, len))) len++;
+  const generatedHash = hashId.substr(0, len);
+
+  usedIds.add(generatedHash);
+
+  return generatedHash;
 }

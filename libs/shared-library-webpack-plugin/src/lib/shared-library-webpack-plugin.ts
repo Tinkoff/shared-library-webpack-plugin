@@ -8,12 +8,14 @@ import { parse } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import {
+  createUniqueHash,
   enforceSourceToString,
   findClosestPackageJsonWithVersion,
   getTapFor,
   isFnWithName,
   suffixFromVersion,
 } from './utils';
+import { createHash } from 'crypto';
 
 type ModuleWithDeps = compilation.Module &
   WithDeps & {
@@ -130,7 +132,7 @@ export class SharedLibraryWebpackPlugin implements Plugin {
     deps: [],
   };
 
-  public static readonly defaultSharedLibraryNamespace = '__shared_libs__';
+  public static readonly defaultSharedLibraryNamespace = '__shared_libs_b8__';
 
   private static readonly moduleSeparator = '___module_separator___';
 
@@ -213,11 +215,6 @@ export class SharedLibraryWebpackPlugin implements Plugin {
       ) {
         compiler.options.output.jsonpFunction = uuidV4();
       }
-
-      // принудительно устанавливаем хэширование id модулей
-      // иначе могут быть конфликты при их резолве,
-      // например, при сборках для prod и dev
-      compiler.options.optimization.moduleIds = 'hashed';
     });
 
     // Получаем инстанс текущей компиляции, сохраняем его для удобства в инстанс
@@ -229,12 +226,12 @@ export class SharedLibraryWebpackPlugin implements Plugin {
           addChunk: AddChunk;
         };
 
-        this.initCompilationHooks();
+        this.initCompilationHooks(compiler);
       }
     );
   }
 
-  private initCompilationHooks() {
+  private initCompilationHooks(compiler: Compiler) {
     // chunk runtime.js
     // хук на изменения кода бутстрапа приложения
     ((this.compilation.mainTemplate.hooks as any)
@@ -264,6 +261,22 @@ export class SharedLibraryWebpackPlugin implements Plugin {
       getTapFor(SharedLibraryWebpackPlugin.name, 10),
       () => {
         this.libraryToChunk();
+      }
+    );
+
+    //хэшируем все модули
+    this.compilation.hooks.beforeModuleIds.tap(
+      getTapFor(SharedLibraryWebpackPlugin.name, 10),
+      (modules) => {
+        for (const module of modules) {
+          if (module.id === null && (module as any).libIdent) {
+            const id = (module as any).libIdent({
+              context: compiler.options.context,
+            });
+
+            module.id = createUniqueHash(id);
+          }
+        }
       }
     );
   }
@@ -632,11 +645,6 @@ if(installedChunks[depId] !== 0){
             chunkName
           );
 
-          // создаем одноименную группу
-          const groupChunk: compilation.ChunkGroup = this.compilation.addChunkInGroup(
-            newChunk.name
-          );
-
           const addModuleToChunk = (
             module: ModuleWithDeps,
             chunk: compilation.Chunk
@@ -662,18 +670,8 @@ if(installedChunks[depId] !== 0){
 
           addModuleToChunk(module, newChunk);
 
-          // и привязываем его к одноименной группе
-          (groupChunk as any).pushChunk(newChunk);
-
-          // группу кидаем в дочерние точки входа
-          // webpack в таком случае думает, что соответствующий модуль
-          // заимпортирован через динамический import
-          if (entry.addChild(groupChunk)) {
-            (groupChunk as any).addParent(entry);
-          }
-
           // Вырубаем tree shaking для нового чанка
-          newChunk.modulesIterable.forEach((m) => {
+          newChunk.modulesIterable.forEach((m: ModuleWithDeps) => {
             if (m.type.startsWith('javascript/')) {
               m.used = true;
 
@@ -687,8 +685,49 @@ if(installedChunks[depId] !== 0){
               }
 
               m.buildMeta.providedExports = true;
+
+              const id = !m.rawRequest
+                ? null
+                : m.rawRequest === module.rawRequest
+                ? module.rawRequest
+                : module.rawRequest + m.rawRequest;
+
+              if (id) {
+                // хэшируем шареные либы отдельно
+                // что бы между приложениями в любом случае
+                // хэши совпадали
+                m.id = createUniqueHash(id);
+              }
             }
           });
+
+          // хэшируем имя чанка в зависимости от версии и
+          // внутренних импортов библиотеки
+          const hashedChunkName =
+            newChunk.name +
+            [...newChunk.modulesIterable]
+              .map((m) => m.id)
+              .filter(Boolean)
+              .join('');
+
+          const hash = createHash('md4');
+          hash.update(hashedChunkName);
+          newChunk.name = hash.digest('hex');
+
+          // создаем одноименную группу
+          const groupChunk: compilation.ChunkGroup = this.compilation.addChunkInGroup(
+            newChunk.name
+          );
+
+          // и привязываем его к одноименной группе
+          (groupChunk as any).pushChunk(newChunk);
+
+          // группу кидаем в дочерние точки входа
+          // webpack в таком случае думает, что соответствующий модуль
+          // заимпортирован через динамический import
+          if (entry.addChild(groupChunk)) {
+            (groupChunk as any).addParent(entry);
+          }
 
           // и сохраняем ссылки на чанк и его точку входа
           // для патча кода обвязки модулей
