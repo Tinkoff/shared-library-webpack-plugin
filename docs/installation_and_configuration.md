@@ -32,5 +32,3 @@ module.exports = {
 
 The plugin adds one more chunk with a hashed name to the bundle. It should be a shared lodash. When the application is loaded, the webpack runtime will check if lodash is loaded.
 
-## [How does it work?](how_does_it_work.md)
-
