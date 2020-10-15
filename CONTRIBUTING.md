@@ -13,7 +13,7 @@ Please make sure you are welcoming and friendly in all of our spaces.
 In order to make your contribution please make a fork of the repository. After you've pulled
 the code, follow these steps to kick start the development:
 
-1. Run `npm ci` to install dependencies
+1. Run `npm i` to install dependencies
 2. Run `npm start` to launch demo project where you could test your changes
 3. Use following commands to ensure code quality
 

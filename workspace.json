@@ -139,7 +139,14 @@
             "assets": [
               "libs/shared-library-webpack-plugin/*.md",
               "README.md",
-              "LICENSE"
+              "LICENSE",
+              "CODE_OF_CONDUCT.md",
+              "CONTRIBUTING.md",
+              {
+                "glob": "**/*.md",
+                "input": "docs",
+                "output": "docs"
+              }
             ]
           }
         }
