@@ -22,7 +22,7 @@ SharedLibraryWebpackPlugin came to us from a perfect world!
 ### Documentations
 
 1. [Installation and configuration](docs/installation_and_configuration.md)
-2. [How is it works?](docs/how_is_it_works.md)
+2. [How is it works?](docs/how_does_it_work.md)
 3. [Sharing and Tree shaking](https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/tree/15f229429eaf4e9adedbd15b405686a142d0087e/docs/tree_shaking.md)
 
 ### Demo
