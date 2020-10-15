@@ -122,7 +122,9 @@ A name to search for a library in a bundle.
 
 A name of a shared chunk
 
+{% hint style="info" %}
 If a pattern exists `chunkName` is ignored
+{% endhint %}
 {% endtab %}
 
 {% tab title="Example" %}
