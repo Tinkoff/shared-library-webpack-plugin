@@ -1,7 +1,7 @@
 # Table of contents
 
-* [README](README.md)
-* [docs](docs/README.md)
+* [SharedLibraryWebpackPlugin](README.md)
+* [Documentation](docs/README.md)
   * [Sharing and Tree shaking](docs/tree_shaing.md)
   * [How is it works?](docs/how_is_it_works.md)
   * [Installation and Configuration](docs/installation_and_configuration.md)
