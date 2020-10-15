@@ -1,4 +1,4 @@
-# How is it works?
+# How does it work?
 
 ## How the plugin works
 

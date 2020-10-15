@@ -58,5 +58,5 @@ After that, the client page loads 174.6kB of JavaScript! It is 38% less!
 
 ### [Contributing](contributing.md)
 
-### [License](https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/tree/15f229429eaf4e9adedbd15b405686a142d0087e/LICENSE/README.md)
+### [License](license.md)
 
