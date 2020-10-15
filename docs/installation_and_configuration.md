@@ -1,6 +1,6 @@
 # Installation and Configuration
 
-## Intsllation
+## Installation
 
 The plugin can install by any package manager.
 
