@@ -6,7 +6,7 @@
 
 ## Options
 
-### `libs`
+#### `libs`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -36,7 +36,7 @@ new SharedLibraryWebpackPlugin({
 {% endtab %}
 {% endtabs %}
 
-### `namespace`
+#### `namespace`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -54,7 +54,7 @@ The namespace for saving exported libraries
 {% endtab %}
 {% endtabs %}
 
-### `disableDefaultJsonpFunctionChange`
+#### `disableDefaultJsonpFunctionChange`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -74,11 +74,11 @@ If true `jsonpFunction` will be replaced with a random name
 {% endtab %}
 {% endtabs %}
 
-## `SharedLibrarySearchConfig`
+### `SharedLibrarySearchConfig`
 
 `SharedLibrarySearchConfig` configures the search for sharing library and the formation of a chunk name.
 
-### `pattern`
+#### `pattern`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -96,7 +96,7 @@ An option to search for libraries in a bundle.
 {% endtab %}
 {% endtabs %}
 
-### `name`
+#### `name`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -114,7 +114,7 @@ A name to search for a library in a bundle.
 {% endtab %}
 {% endtabs %}
 
-### `chunkName`
+#### `chunkName`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -136,7 +136,7 @@ If a pattern exists `chunkName` is ignored
 {% endtab %}
 {% endtabs %}
 
-### `suffix`
+#### `suffix`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -156,7 +156,7 @@ By default library version `{major}.{minor}-{prerelease}`
 {% endtab %}
 {% endtabs %}
 
-### `separator`
+#### `separator`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -174,7 +174,7 @@ Separator for a chunk name and suffix
 {% endtab %}
 {% endtabs %}
 
-### `deps`
+#### `deps`
 
 {% tabs %}
 {% tab title="Description" %}
@@ -195,7 +195,7 @@ new SharedLibraryWebpackPlugin({
 {% endtab %}
 {% endtabs %}
 
-### `usedExports`
+#### `usedExports`
 
 {% tabs %}
 {% tab title="Description" %}
