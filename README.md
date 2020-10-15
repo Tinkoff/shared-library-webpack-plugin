@@ -1,11 +1,12 @@
-[![npm](https://img.shields.io/npm/v/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
-[![npm](https://img.shields.io/npm/dm/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
+# README
 
-# SharedLibraryWebpackPlugin
+[![npm](https://img.shields.io/npm/v/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin) [![npm](https://img.shields.io/npm/dm/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
+
+## SharedLibraryWebpackPlugin
 
 SharedLibraryWebpackPlugin is a webpack plugin for sharing libraries between applications.
 
-## Motivation
+### Motivation
 
 When the host application loads many micro apps bundled with a webpack, many JavaScript is loaded on a client page. In a perfect world, each app can share its libraries with other apps and meet the requirements:
 
@@ -16,15 +17,15 @@ When the host application loads many micro apps bundled with a webpack, many Jav
 
 SharedLibraryWebpackPlugin came to us from a perfect world!
 
-## Documentations
+### Documentations
 
-1. [Installation and configuration](./docs/installation_and_configuration.md)
-2. [How is it works?](./docs/how_is_it_works.md)
-3. [Sharing and Tree shaking](./docs/tree_shaking.md)
+1. [Installation and configuration](docs/installation_and_configuration.md)
+2. [How is it works?](docs/how_is_it_works.md)
+3. [Sharing and Tree shaking](https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/tree/15f229429eaf4e9adedbd15b405686a142d0087e/docs/tree_shaking.md)
 
-## Demo
+### Demo
 
-There is [a host application with two micro-apps](https://github.com/IKatsuba/shared-library-plugin-demo). All apps are built with Angular. The client page loads 282.8kB of JavaScript (gzip) when it opens all pages.
+There is [a host application with two micro-apps](https://github.com/IKatsuba/shared-library-plugin-demo). All apps are built with Angular. The client page loads 282.8kB of JavaScript \(gzip\) when it opens all pages.
 
 We add SharedLibraryWebpackPlugin in each app build for sharing all Angular packages and zone.js.
 
@@ -53,6 +54,7 @@ module.exports = {
 
 After that, the client page loads 174.6kB of JavaScript! It is 38% less!
 
-## [Contributing](./CONTRIBUTING.md)
+### [Contributing](contributing.md)
 
-## [License](./LICENSE)
+### [License](https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/tree/15f229429eaf4e9adedbd15b405686a142d0087e/LICENSE/README.md)
+
