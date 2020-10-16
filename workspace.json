@@ -137,11 +137,11 @@
             "packageJson": "libs/shared-library-webpack-plugin/package.json",
             "main": "libs/shared-library-webpack-plugin/src/index.ts",
             "assets": [
-              "libs/shared-library-webpack-plugin/*.md",
               "README.md",
-              "LICENSE",
-              "CODE_OF_CONDUCT.md",
-              "CONTRIBUTING.md",
+              "SUMMARY.md",
+              "license.md",
+              "code_of_conduct.md",
+              "contributing.md",
               {
                 "glob": "**/*.md",
                 "input": "docs",
