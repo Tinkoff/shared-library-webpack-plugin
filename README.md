@@ -1,117 +1,59 @@
-[![npm](https://img.shields.io/npm/v/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
-[![npm](https://img.shields.io/npm/dm/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
-
 # SharedLibraryWebpackPlugin
 
-SharedLibraryWebpackPlugin предназначен для шаринга библиотек между приложениями в рантайме.
+[![npm](https://img.shields.io/npm/v/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin) [![npm](https://img.shields.io/npm/dm/@tinkoff/shared-library-webpack-plugin)](https://www.npmjs.com/package/@tinkoff/shared-library-webpack-plugin)
 
-## Мотивация
+`SharedLibraryWebpackPlugin` is a webpack plugin for sharing libraries between applications.
 
-При загрузке нескольких бандлов разных приложений встал вопрос о минимизации размеров этих бандлов.
-Так как бандлы имели очень много одинаковых зависимостей логично вынести и поставлять их отдельно.
+### Motivation
 
-После ряда исследований было принято решение о создании плагина для Webpack 4, который решает следующие проблемы:
+When the host application loads many micro apps bundled with a webpack, many JavaScript is loaded on a client page. In a perfect world, each app can share its libraries with other apps and meet the requirements:
 
-1. Приложения остаются самодостаточным и автономными (т.е. не меняется механизм загрузки и почти не меняется сборка)
-2. Самостоятельная загрузка недостающих модулей
-3. Шаринг кода в рантайме
-4. Разные версии библиотек работают независимо друг от друга
+1. Each app stays self-hosted.
+2. Fallbacks for non-loaded packages.
+3. Codesharing in runtime.
+4. Different library versions work individually.
 
-## Установка и пример конфигурации
+SharedLibraryWebpackPlugin came to us from a perfect world!
 
-Добавляем плагин в зависимости `package.json`:
+### Documentations
 
-```
-npm install @tinkoff/shared-library-webpack-plugin -D
-```
+1. [Installation and configuration](docs/installation_and_configuration.md)
+2. [How is it works?](docs/how_does_it_work.md)
+3. [Sharing and Tree shaking](https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/tree/15f229429eaf4e9adedbd15b405686a142d0087e/docs/tree_shaking.md)
+4. [The Plugin API](docs/the_plugin.md)
 
-Добавляем плагин в конфигурацию webpack
+### Demo
 
-```typescript
-{
-  plugins: [
-    ...,
-    new SharedLibraryWebpackPlugin({
-      libs: ['lodash']
-    }),
-    ...
-  ]
-}
-```
+There is [a host application with two micro-apps](https://github.com/IKatsuba/shared-library-plugin-demo). All apps are built with Angular. The client page loads 282.8kB of JavaScript \(gzip\) when it opens all pages.
 
-Сборки приложения с такой конфигурацией плагина будет содержать
-отдельный чанк с библиотекой lodash. Чанк будет загружен в случае,
-если lodash не был загружен ранее при инициализации другого приложения
-с подобной конфигурацией.
-
-## Так что же делает плагин?
-
-Плагин вносит коррективы как в процесс сборки приложения (buildtime), так и в процесс запуска и проигрывания приложения (runtime).
-
-### Buildtime
-
-1. Происходит анализ сформированных чанков на наличие указанных библиотек.
-   Каждая из найденных библиотек выделяется в отдельный чанк с отключением tree shaking(!).
-   Все выделенные чанки с точки зрения webpack существуют сами по себе и не привязываются к entry points.
-2. Модифицируется webpack runtime для записи и чтения результата выполнения и загрузки выделенных библиотек.
-3. Модифицируется стандартная обертка entry points для проверки на уже существующие в runtime библиотеки.
-
-### Runtime
-
-1. Загружается entry points приложения
-2. При загрузке entry point происходит проверка на загрузку зависимых библиотек.
-3. Затем загружаются только недостающие библиотеки.
-4. Загруженные выделенные библиотеки экспортируются в общий неймспейс в глобальном пространстве.
-5. Инициализация entry points (запуск приложения)
-
-## Шаринг библиотек с разными версиями
-
-По умолчанию мы считаем, что все разработчики библиотек придерживаются semantic release. На основе этого соглашения можно предположить, что при шаринге нужно учитывать лишь мажор, минор и пререлизные версии. Именно такой шаблон {major}.{minor}-{prerelease} будет использоваться по умолчанию при поиске в runtime заруженного аналога используемой в entry point библиотеки.
-
-### Что это значит?
-
-Допустим, что одно из приложений поставляет `lodash`, как библиотеку которую можно переиспользовать, если она уже загружена.
+We add SharedLibraryWebpackPlugin in each app build for sharing all Angular packages and zone.js.
 
 ```typescript
-{
+const {
+  SharedLibraryWebpackPlugin,
+} = require('@tinkoff/shared-library-webpack-plugin');
+
+module.exports = {
   plugins: [
-    ...,
     new SharedLibraryWebpackPlugin({
-      libs: 'lodash'
+      libs: [
+        { name: '@angular/core', usedExports: [] },
+        { name: '@angular/common', usedExports: [] },
+        { name: '@angular/common/http', usedExports: [] },
+        { name: '@angular/platform-browser', usedExports: ['DomSanitizer'] },
+        { name: '@angular/platform-browser/animations', usedExports: [] },
+        { name: '@angular/animations', usedExports: [] },
+        { name: '@angular/animations/browser', usedExports: [] },
+        'zone.js/dist/zone',
+      ],
     }),
-    ...
-  ]
-}
+  ],
+};
 ```
 
-При сборке будет выделен соответствующий чанк с названием `lodash-4.16.js`, который содержит
-выделенную библиотеку. В название чанка была включена версия библиотеки без учета патча.
+After that, the client page loads 174.6kB of JavaScript! It is 38% less!
 
-Второе приложение имеет такую же конфигурацию, но отличную версию `lodash`. При сборке выделяется чанк с названием `lodash-4.17.js`.
+### [Contributing](contributing.md)
 
-При загрузке первого приложения будет загружен чанк `lodash-4.16.js`, так как очевидно `lodash` еще не загружался.
-При этом будут проставлены метки, что чанк загружен и результат экспорта будет записан в глобальный неймспейс,
-откуда он будет импортироваться следующими приложениями, имеющими аналогичную настройку.
+### [License](license.md)
 
-При загрузке второго приложения в runtime будут проверен глобальный неймспейс на факт загрузки `lodash@4.17.x`,
-но неймспейс не будет содержать ничего, кроме `lodash@4.16.x`. Но как было описано выше по умолчанию разница в миноре
-считается несовместимой. По этому второе приложение так же загрузит lodash, но свою версию и будет при работе
-использовать только ее.
-
-Для изменения дефолтного поведения в конфигурации можно указать `suffix`, который заменит стандартный шаблон с версией пакета.
-
-```typescript
-{
-  plugins: [
-    ...,
-    new SharedLibraryWebpackPlugin({
-      libs: {name: 'lodash', suffix: 'someSuffix'}
-    }),
-    ...
-  ]
-}
-```
-
-В этом случае при сборке будет выделен чанк `lodash-someSuffix.js`. При загрузке двух приложений, использующих такой
-конфиг `lodash` будет загружен один раз и переиспользован обоими приложениями,
-даже если приложения имеют разные версии `lodash` в зависимостях.
