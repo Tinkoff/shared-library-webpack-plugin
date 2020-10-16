@@ -1,0 +1,29 @@
+{
+  "name": "@tinkoff/shared-library-webpack-plugin",
+  "version": "0.0.0-development.0",
+  "license": "Apache-2.0",
+  "keywords": [
+    "shared",
+    "library",
+    "webpack",
+    "plugin"
+  ],
+  "author": "Igor Katsuba <i.katsuba@tinkoff.ru>",
+  "description": "Webpack plugin for library sharing at runtime between applications",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/TinkoffCreditSystems/shared-library-webpack-plugin#readme",
+  "dependencies": {
+    "uuid": "^8.1.0",
+    "jscodeshift": "^0.9.0",
+    "lodash": "^4.17.15"
+  }
+}
