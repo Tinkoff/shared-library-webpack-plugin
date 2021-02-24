@@ -164,7 +164,10 @@ export class SharedLibraryWebpackPlugin implements Plugin {
     disableDefaultJsonpFunctionChange = false,
   }: SharedLibraryWebpackPluginOptions) {
     this.namespace = namespace;
-    this.libs = (Array.isArray(libs) ? libs : [libs])
+    this.libs = (Array.isArray(libs)
+      ? (libs as Array<string | SharedLibrarySearchConfig>)
+      : [libs]
+    )
       .map((lib) => (typeof lib === 'string' ? { pattern: lib } : lib))
       .map((lib) => ({
         ...SharedLibraryWebpackPlugin.defaultSharedLibrarySearch,
@@ -703,16 +706,14 @@ if(installedChunks[depId] !== 0){
 
           // хэшируем имя чанка в зависимости от версии и
           // внутренних импортов библиотеки
-          const hashedChunkName =
-            newChunk.name +
-            [...newChunk.modulesIterable]
-              .map((m) => m.id)
-              .filter(Boolean)
-              .join('');
+          const hashedChunkName = [...newChunk.modulesIterable]
+            .map((m) => m.id)
+            .filter(Boolean)
+            .join('');
 
           const hash = createHash('md4');
           hash.update(hashedChunkName);
-          newChunk.name = hash.digest('hex');
+          newChunk.name = `${newChunk.name}.${hash.digest('hex').substr(0, 6)}`;
 
           // создаем одноименную группу
           const groupChunk: compilation.ChunkGroup = this.compilation.addChunkInGroup(
