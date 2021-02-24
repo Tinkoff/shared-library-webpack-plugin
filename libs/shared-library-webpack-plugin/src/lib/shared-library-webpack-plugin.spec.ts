@@ -143,7 +143,7 @@ describe('SharedLibraryWebpackPlugin', () => {
 
       expect(assetsByChunkName).toEqual({
         entry: 'entry.js',
-        e138547f92793a9c9f56c71e0cbd8b7f: 'e138547f92793a9c9f56c71e0cbd8b7f.js',
+        'lodash-4.17.e440fc': 'lodash-4.17.e440fc.js',
         runtime: 'runtime.js',
       });
     });
@@ -206,10 +206,9 @@ describe('SharedLibraryWebpackPlugin', () => {
 
       expect(assetsByChunkName).toEqual({
         entry: 'entry.js',
-        '6de17ccb57410727d703f8f43cf176ad':
-          '6de17ccb57410727d703f8f43cf176ad.js',
-        '841c5fb8f153820177604a52d7a81a64':
-          '841c5fb8f153820177604a52d7a81a64.js',
+        'lodashLastIndexOf-4.17.f151b0': 'lodashLastIndexOf-4.17.f151b0.js',
+        'minimatch-3.0-lodash-4.17.d8bc20':
+          'minimatch-3.0-lodash-4.17.d8bc20.js',
         runtime: 'runtime.js',
       });
     });
@@ -250,11 +249,9 @@ describe('SharedLibraryWebpackPlugin', () => {
 
       expect(assetsByChunkName).toEqual({
         entry: 'entry.js',
-        '4e1714e02887fff15c33d70f2cf52cca':
-          '4e1714e02887fff15c33d70f2cf52cca.js',
-        '87a872dc20ed59f9d79f4f67f469b215':
-          '87a872dc20ed59f9d79f4f67f469b215.js',
-        d0a0da2798e967aea097db4ebd3ac209: 'd0a0da2798e967aea097db4ebd3ac209.js',
+        'angularCommon-10.0.1304b2': 'angularCommon-10.0.1304b2.js',
+        'angularCommonHttp-10.0.05f38d': 'angularCommonHttp-10.0.05f38d.js',
+        'angularCore-10.0.a9e392': 'angularCore-10.0.a9e392.js',
         runtime: 'runtime.js',
       });
     });
@@ -324,7 +321,7 @@ describe('SharedLibraryWebpackPlugin', () => {
       await page.goto('http://localhost:4200');
 
       const minimatchIsExists = await page.evaluate(
-        () => !!window['__shared_libs_b8__']['bfeb3267488c3cf7faa6192c5b296d69']
+        () => !!window['__shared_libs_b8__']['minimatch-3.0.d8bc20']
       );
 
       expect(minimatchIsExists).toBeTruthy();
@@ -334,12 +331,9 @@ describe('SharedLibraryWebpackPlugin', () => {
       beforeEach(async () => {
         await page.evaluateOnNewDocument(() => {
           window['__shared_libs_b8__'] = {};
-          window['__shared_libs_b8__']['e138547f92793a9c9f56c71e0cbd8b7f'] =
-            window['__shared_libs_b8__']['e138547f92793a9c9f56c71e0cbd8b7f'] ||
-            {};
-          window['__shared_libs_b8__']['e138547f92793a9c9f56c71e0cbd8b7f'][
-            '60bb'
-          ] = {
+          window['__shared_libs_b8__']['lodash-4.17.e440fc'] =
+            window['__shared_libs_b8__']['lodash-4.17.e440fc'] || {};
+          window['__shared_libs_b8__']['lodash-4.17.e440fc']['60bb'] = {
             exports: {
               camelCase() {
                 return 'There is sharing!';
@@ -369,9 +363,12 @@ describe('SharedLibraryWebpackPlugin', () => {
           elements.map((element) => element.getAttribute('src'))
         );
 
-        expect(
-          scripts.includes('e138547f92793a9c9f56c71e0cbd8b7f.js')
-        ).toBeFalsy();
+        expect(scripts).toStrictEqual([
+          'minimatch-3.0.d8bc20.js',
+          'runtime.js',
+          'styles.js',
+          'main.js',
+        ]);
       });
 
       it('Выводится сообщение из мока lodash', async () => {
@@ -381,8 +378,6 @@ describe('SharedLibraryWebpackPlugin', () => {
           '.lodash-message',
           (element) => element.textContent
         );
-
-        console.log(text);
 
         expect(text).toEqual('There is sharing!');
       });
@@ -409,9 +404,7 @@ describe('SharedLibraryWebpackPlugin', () => {
           requests
             .pipe(filterByResourceType(['script']))
             .subscribe((request) => {
-              if (
-                request.url().endsWith('/e138547f92793a9c9f56c71e0cbd8b7f.js')
-              ) {
+              if (request.url().endsWith('/lodash-4.17.e440fc.js')) {
                 lodashIsLoaded = true;
               }
             })
@@ -430,9 +423,13 @@ describe('SharedLibraryWebpackPlugin', () => {
           elements.map((element) => element.getAttribute('src'))
         );
 
-        expect(
-          scripts.includes('e138547f92793a9c9f56c71e0cbd8b7f.js')
-        ).toBeTruthy();
+        expect(scripts).toStrictEqual([
+          'minimatch-3.0.d8bc20.js',
+          'lodash-4.17.e440fc.js',
+          'runtime.js',
+          'styles.js',
+          'main.js',
+        ]);
       });
 
       it('Выводится сообщение из lodash 4.17', async () => {
@@ -466,8 +463,8 @@ describe('SharedLibraryWebpackPlugin', () => {
         );
 
         expect(scripts).toEqual([
-          'bfeb3267488c3cf7faa6192c5b296d69.js',
-          'e138547f92793a9c9f56c71e0cbd8b7f.js',
+          'minimatch-3.0.d8bc20.js',
+          'lodash-4.17.e440fc.js',
         ]);
       });
     });
