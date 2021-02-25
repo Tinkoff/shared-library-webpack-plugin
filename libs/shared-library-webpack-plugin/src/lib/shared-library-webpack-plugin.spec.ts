@@ -21,6 +21,7 @@ const commonWebpackConfig: webpack.Configuration = {
     },
   },
   performance: false,
+  devtool: 'source-map',
 };
 
 function webpackCallbackFactory(
@@ -142,16 +143,24 @@ describe('SharedLibraryWebpackPlugin', () => {
       const { assetsByChunkName } = stats.toJson();
 
       expect(assetsByChunkName).toEqual({
-        entry: 'entry.js',
-        'lodash-4.17.e440fc': 'lodash-4.17.e440fc.js',
-        runtime: 'runtime.js',
+        entry: ['entry.js', 'entry.js.map'],
+        'lodash-4.17.e440fc': [
+          'lodash-4.17.e440fc.js',
+          'lodash-4.17.e440fc.js.map',
+        ],
+        runtime: ['runtime.js', 'runtime.js.map'],
       });
     });
 
     it('entry не должен содержать динамический чанк', () => {
       const { entrypoints } = stats.toJson();
 
-      expect(entrypoints.entry.assets).toEqual(['runtime.js', 'entry.js']);
+      expect(entrypoints.entry.assets).toEqual([
+        'runtime.js',
+        'runtime.js.map',
+        'entry.js',
+        'entry.js.map',
+      ]);
     });
 
     it('Глобальный неймспейс для шаринга имеет дефолтное имя', () => {
@@ -205,18 +214,28 @@ describe('SharedLibraryWebpackPlugin', () => {
       const { assetsByChunkName } = stats.toJson();
 
       expect(assetsByChunkName).toEqual({
-        entry: 'entry.js',
-        'lodashLastIndexOf-4.17.f151b0': 'lodashLastIndexOf-4.17.f151b0.js',
-        'minimatch-3.0-lodash-4.17.d8bc20':
+        entry: ['entry.js', 'entry.js.map'],
+        'lodashLastIndexOf-4.17.f151b0': [
+          'lodashLastIndexOf-4.17.f151b0.js',
+          'lodashLastIndexOf-4.17.f151b0.js.map',
+        ],
+        'minimatch-3.0-lodash-4.17.d8bc20': [
           'minimatch-3.0-lodash-4.17.d8bc20.js',
-        runtime: 'runtime.js',
+          'minimatch-3.0-lodash-4.17.d8bc20.js.map',
+        ],
+        runtime: ['runtime.js', 'runtime.js.map'],
       });
     });
 
     it('entry не должен содержать динамические чанки', () => {
       const { entrypoints } = stats.toJson();
 
-      expect(entrypoints.entry.assets).toEqual(['runtime.js', 'entry.js']);
+      expect(entrypoints.entry.assets).toEqual([
+        'runtime.js',
+        'runtime.js.map',
+        'entry.js',
+        'entry.js.map',
+      ]);
     });
 
     it('Глобальный неймспейс для шаринга имеет кастомное имя', () => {
@@ -248,11 +267,20 @@ describe('SharedLibraryWebpackPlugin', () => {
       const { assetsByChunkName } = stats.toJson();
 
       expect(assetsByChunkName).toEqual({
-        entry: 'entry.js',
-        'angularCommon-10.0.1304b2': 'angularCommon-10.0.1304b2.js',
-        'angularCommonHttp-10.0.05f38d': 'angularCommonHttp-10.0.05f38d.js',
-        'angularCore-10.0.a9e392': 'angularCore-10.0.a9e392.js',
-        runtime: 'runtime.js',
+        'angularCommon-10.0.1304b2': [
+          'angularCommon-10.0.1304b2.js',
+          'angularCommon-10.0.1304b2.js.map',
+        ],
+        'angularCommonHttp-10.0.05f38d': [
+          'angularCommonHttp-10.0.05f38d.js',
+          'angularCommonHttp-10.0.05f38d.js.map',
+        ],
+        'angularCore-10.0.a9e392': [
+          'angularCore-10.0.a9e392.js',
+          'angularCore-10.0.a9e392.js.map',
+        ],
+        entry: ['entry.js', 'entry.js.map'],
+        runtime: ['runtime.js', 'runtime.js.map'],
       });
     });
 
