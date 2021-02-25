@@ -534,17 +534,18 @@ if(${JSON.stringify(
       .toSource()
       .split(SharedLibraryWebpackPlugin.moduleSeparator);
 
-    return moduleWrappers
-      .reduce((result, moduleWrapper, i) => {
+    // return the same structure as got
+    return new ConcatSource(
+      ...moduleWrappers.reduce((result, moduleWrapper, i) => {
         result.push(moduleWrapper);
 
         if (modules[i]) {
-          result.push(enforceSourceToString(modules[i]));
+          result.push(modules[i]);
         }
 
         return result;
       }, [])
-      .join('\n');
+    );
   }
 
   /**
