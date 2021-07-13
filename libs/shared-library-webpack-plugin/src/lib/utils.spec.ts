@@ -5,7 +5,6 @@ import {
   getTapFor,
   goUpFolders,
   isFnWithName,
-  suffixFromVersion,
 } from './utils';
 import * as jscodeshift from 'jscodeshift';
 import { ConcatSource } from 'webpack-sources';
@@ -105,15 +104,6 @@ describe('findClosestPackageJsonWithVersion', () => {
     );
 
     expect(result).toEqual(null);
-  });
-});
-
-describe('suffixFromVersion', () => {
-  it('Если версия не содержит пререлизного тега, то возвращается минор и мажор', function () {
-    expect(suffixFromVersion('1.2.3')).toEqual('1.2');
-  });
-  it('Если версия содержит пререлизный тег, то возвращается минор, мажор и тег', function () {
-    expect(suffixFromVersion('1.2.3-next.0')).toEqual('1.2-next.0');
   });
 });
 

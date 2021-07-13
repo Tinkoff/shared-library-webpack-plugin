@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from 'fs';
 import { FunctionDeclaration } from 'jscodeshift';
 import * as semver from 'semver';
 import { createHash } from 'crypto';
+import { template } from 'lodash';
 
 /**
  * [Конфиг хука]{@see Tap} с приоритетом
@@ -77,18 +78,31 @@ export function findClosestPackageJsonWithVersion(
   return null;
 }
 
-/**
- * Вырезает patch из версии
- * @param version
- */
-export function suffixFromVersion(version: string): string {
-  const { major, minor, prerelease } = semver.parse(version);
+export interface PackageVersion {
+  major: string;
+  minor: string;
+  patch: string;
+  prerelease?: string;
+}
 
-  // Убираем из версии patch, делая предположение что большинство библиотек
-  // придерживаются semantic release, но оставляем пререлизные теги
-  return (
-    `${major}.${minor}` + (prerelease.length ? `-${prerelease.join('.')}` : '')
-  );
+export function getPackageVersion(version: string): PackageVersion {
+  const { major, minor, prerelease, patch } = semver.parse(version);
+
+  return {
+    major,
+    minor,
+    prerelease: prerelease.length ? `-${prerelease.join('.')}` : '',
+    patch,
+  };
+}
+
+export function compileSuffix(
+  suffix: string,
+  data: Partial<PackageVersion> & Record<string, any>
+): string {
+  const compiled = template(suffix);
+
+  return compiled(data);
 }
 
 const usedIds = new Set<string>();
