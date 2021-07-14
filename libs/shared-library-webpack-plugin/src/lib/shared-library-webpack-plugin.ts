@@ -8,12 +8,13 @@ import { parse } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import {
+  compileSuffix,
   createUniqueHash,
   enforceSourceToString,
   findClosestPackageJsonWithVersion,
+  getPackageVersion,
   getTapFor,
   isFnWithName,
-  suffixFromVersion,
 } from './utils';
 import { createHash } from 'crypto';
 
@@ -127,15 +128,17 @@ export interface SharedLibraryWebpackPluginOptions {
  * Плагин для шаринга библиотек между приложениями
  */
 export class SharedLibraryWebpackPlugin implements Plugin {
+  public static readonly defaultSharedLibraryNamespace = '__shared_libs_b8__';
   private static readonly defaultSharedLibrarySearch: SharedLibrarySearchConfig = {
     separator: '-',
     deps: [],
+    suffix: "${major}.${minor}${prerelease ? '-' + prerelease : ''}",
   };
-
-  public static readonly defaultSharedLibraryNamespace = '__shared_libs_b8__';
-
   private static readonly moduleSeparator = '___module_separator___';
-
+  /**
+   * {@see SharedLibraryWebpackPluginOptions#libs}
+   */
+  public readonly libs: ReadonlyArray<SharedLibrarySearchConfig>;
   /**
    * Список чанков с модулями для шаринга и соответсвующие им entry
    */
@@ -147,10 +150,6 @@ export class SharedLibraryWebpackPlugin implements Plugin {
    * {@see SharedLibraryWebpackPluginOptions#namespace}
    */
   private readonly namespace: string;
-  /**
-   * {@see SharedLibraryWebpackPluginOptions#libs}
-   */
-  public readonly libs: ReadonlyArray<SharedLibrarySearchConfig>;
   private compilation: compilation.Compilation & { addChunk: AddChunk };
   private readonly patchRequireFnCache = new Map<string, string>();
   private readonly disableDefaultJsonpFunctionChange: boolean;
@@ -746,7 +745,10 @@ if(installedChunks[depId] !== 0){
       return [
         ...result,
         camelCase(name),
-        suffixFromVersion(require(`${name}/package.json`).version),
+        compileSuffix(
+          SharedLibraryWebpackPlugin.defaultSharedLibrarySearch.suffix,
+          getPackageVersion(require(`${name}/package.json`).version)
+        ),
       ];
     }, []);
   }
@@ -763,22 +765,20 @@ if(installedChunks[depId] !== 0){
     librarySearchConfig: SharedLibrarySearchConfig,
     module: { userRequest: string; rawRequest?: string }
   ): string | null {
-    let { suffix } = librarySearchConfig;
+    const { suffix } = librarySearchConfig;
 
-    if (isNil(suffix)) {
-      const { version } =
-        findClosestPackageJsonWithVersion(parse(module.userRequest).dir) || {};
+    const { version } =
+      findClosestPackageJsonWithVersion(parse(module.userRequest).dir) || {};
 
-      if (!version) {
-        this.logger.warn(`Не найдена версия для пакета '${module.rawRequest}'`);
+    let templateData = {};
 
-        return null;
-      }
-
-      suffix = suffixFromVersion(version);
+    if (!version) {
+      this.logger.warn(`Не найдена версия для пакета '${module.rawRequest}'`);
+    } else {
+      templateData = getPackageVersion(version);
     }
 
-    return suffix;
+    return compileSuffix(suffix, templateData);
   }
 
   /**

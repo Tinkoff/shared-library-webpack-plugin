@@ -101,7 +101,12 @@ describe('SharedLibraryWebpackPlugin', () => {
   describe('Конфигурация libs', () => {
     it('Если в libs передать строку, то на выходе получим массив конфигов с одним элементом', function () {
       expect(new SharedLibraryWebpackPlugin({ libs: 'lib' }).libs).toEqual([
-        { deps: [], pattern: 'lib', separator: '-' },
+        {
+          deps: [],
+          pattern: 'lib',
+          separator: '-',
+          suffix: "${major}.${minor}${prerelease ? '-' + prerelease : ''}",
+        },
       ]);
     });
 
@@ -115,9 +120,24 @@ describe('SharedLibraryWebpackPlugin', () => {
           ],
         }).libs
       ).toEqual([
-        { deps: [], pattern: 'lib', separator: '-' },
-        { deps: [], name: 'lib2', separator: '-' },
-        { deps: ['lib3'], pattern: 'lib/*', separator: '.' },
+        {
+          deps: [],
+          pattern: 'lib',
+          separator: '-',
+          suffix: "${major}.${minor}${prerelease ? '-' + prerelease : ''}",
+        },
+        {
+          deps: [],
+          name: 'lib2',
+          separator: '-',
+          suffix: "${major}.${minor}${prerelease ? '-' + prerelease : ''}",
+        },
+        {
+          deps: ['lib3'],
+          pattern: 'lib/*',
+          separator: '.',
+          suffix: "${major}.${minor}${prerelease ? '-' + prerelease : ''}",
+        },
       ]);
     });
   });
