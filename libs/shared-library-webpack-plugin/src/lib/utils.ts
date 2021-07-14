@@ -79,13 +79,13 @@ export function findClosestPackageJsonWithVersion(
 }
 
 export interface PackageVersion {
-  major: string;
-  minor: string;
-  patch: string;
+  major: number;
+  minor: number;
+  patch: number;
   prerelease?: string;
 }
 
-export function getPackageVersion(version: string): PackageVersion {
+export function getPackageVersion(version: string): PackageVersion | null {
   const { major, minor, prerelease, patch } = semver.parse(version);
 
   return {
@@ -98,7 +98,7 @@ export function getPackageVersion(version: string): PackageVersion {
 
 export function compileSuffix(
   suffix: string,
-  data: Partial<PackageVersion> & Record<string, any>
+  data: Partial<PackageVersion>
 ): string {
   const compiled = template(suffix);
 

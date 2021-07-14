@@ -775,7 +775,7 @@ if(installedChunks[depId] !== 0){
     if (!version) {
       this.logger.warn(`Не найдена версия для пакета '${module.rawRequest}'`);
     } else {
-      templateData = { ...templateData, ...getPackageVersion(version) };
+      templateData = getPackageVersion(version);
     }
 
     return compileSuffix(suffix, templateData);
