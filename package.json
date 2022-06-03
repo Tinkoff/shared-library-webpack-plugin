@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@angular/common": "^10.0.11",
-    "@angular/core": "^10.0.11",
+    "@angular/core": "^11.0.5",
     "@ng-builders/build": "^1.1.0",
     "@nrwl/eslint-plugin-nx": "9.3.0",
     "@nrwl/jest": "9.3.0",
