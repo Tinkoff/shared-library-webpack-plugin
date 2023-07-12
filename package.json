@@ -49,7 +49,7 @@
     "@nrwl/eslint-plugin-nx": "9.3.0",
     "@nrwl/jest": "9.3.0",
     "@nrwl/node": "^9.3.0",
-    "@nrwl/web": "9.3.0",
+    "@nrwl/web": "16.5.1",
     "@nrwl/workspace": "9.3.0",
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@semantic-release/github": "^7.0.7",
